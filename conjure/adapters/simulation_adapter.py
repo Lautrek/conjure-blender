@@ -271,7 +271,7 @@ class SimulationAdapter:
             sorted by eigenvalue magnitude (largest first)
         """
         # Build symmetric inertia tensor matrix
-        I = [
+        inertia = [
             [moments["Ixx"], moments["Ixy"], moments["Ixz"]],
             [moments["Ixy"], moments["Iyy"], moments["Iyz"]],
             [moments["Ixz"], moments["Iyz"], moments["Izz"]],
@@ -290,8 +290,8 @@ class SimulationAdapter:
             p, q = 0, 1
             for i in range(3):
                 for j in range(i + 1, 3):
-                    if abs(I[i][j]) > max_val:
-                        max_val = abs(I[i][j])
+                    if abs(inertia[i][j]) > max_val:
+                        max_val = abs(inertia[i][j])
                         p, q = i, j
 
             # Check convergence
@@ -299,30 +299,30 @@ class SimulationAdapter:
                 break
 
             # Calculate rotation angle
-            if abs(I[p][p] - I[q][q]) < tolerance:
+            if abs(inertia[p][p] - inertia[q][q]) < tolerance:
                 theta = math.pi / 4.0
             else:
-                theta = 0.5 * math.atan2(2.0 * I[p][q], I[p][p] - I[q][q])
+                theta = 0.5 * math.atan2(2.0 * inertia[p][q], inertia[p][p] - inertia[q][q])
 
             c = math.cos(theta)
             s = math.sin(theta)
 
-            # Apply Jacobi rotation to I
-            I_new = [row[:] for row in I]  # Deep copy
+            # Apply Jacobi rotation to inertia
+            I_new = [row[:] for row in inertia]  # Deep copy
 
-            I_new[p][p] = c * c * I[p][p] + s * s * I[q][q] - 2 * s * c * I[p][q]
-            I_new[q][q] = s * s * I[p][p] + c * c * I[q][q] + 2 * s * c * I[p][q]
+            I_new[p][p] = c * c * inertia[p][p] + s * s * inertia[q][q] - 2 * s * c * inertia[p][q]
+            I_new[q][q] = s * s * inertia[p][p] + c * c * inertia[q][q] + 2 * s * c * inertia[p][q]
             I_new[p][q] = 0.0
             I_new[q][p] = 0.0
 
             for i in range(3):
                 if i != p and i != q:
-                    I_new[p][i] = c * I[p][i] - s * I[q][i]
+                    I_new[p][i] = c * inertia[p][i] - s * inertia[q][i]
                     I_new[i][p] = I_new[p][i]
-                    I_new[q][i] = s * I[p][i] + c * I[q][i]
+                    I_new[q][i] = s * inertia[p][i] + c * inertia[q][i]
                     I_new[i][q] = I_new[q][i]
 
-            I = I_new
+            inertia = I_new
 
             # Apply rotation to eigenvectors
             V_new = [row[:] for row in V]
@@ -332,7 +332,7 @@ class SimulationAdapter:
             V = V_new
 
         # Extract eigenvalues (diagonal) and sort by magnitude
-        eigenvalues = [I[i][i] for i in range(3)]
+        eigenvalues = [inertia[i][i] for i in range(3)]
         eigenvectors = [[V[j][i] for j in range(3)] for i in range(3)]
 
         # Sort by eigenvalue magnitude (largest first = primary axis)
