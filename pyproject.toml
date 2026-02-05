@@ -17,9 +17,7 @@ classifiers = [
     "Topic :: Multimedia :: Graphics :: 3D Modeling",
 ]
 
-dependencies = [
-    "conjure-cad>=0.1.0",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
