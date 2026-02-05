@@ -1,5 +1,8 @@
 # Conjure Blender Add-on
 
+[![CI](https://github.com/Lautrek/conjure-blender/actions/workflows/ci.yml/badge.svg)](https://github.com/Lautrek/conjure-blender/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 Blender add-on for AI-assisted 3D modeling with Conjure. Enables Claude Code and other AI tools to control Blender via the Model Context Protocol (MCP).
 
 ## Features
@@ -176,7 +179,7 @@ MIT License - See [LICENSE](LICENSE) file.
 
 ## Links
 
-- [Conjure SDK](https://github.com/Lautrek/conjure-sdk) - Python SDK for Conjure
+- [Conjure SDK](https://github.com/Lautrek/conjure-sdk) - Python SDK (`pip install conjure-sdk`)
 - [Conjure FreeCAD](https://github.com/Lautrek/conjure-freecad) - FreeCAD workbench
-- [Documentation](https://lautrek.com/conjure/docs)
+- [Conjure Website](https://conjure.lautrek.com)
 - [Issues](https://github.com/Lautrek/conjure-blender/issues)
