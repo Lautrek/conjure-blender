@@ -163,7 +163,6 @@ conjure-blender/
 │   ├── operators/           # Blender operators
 │   ├── panels/              # UI panels
 │   └── utils/               # Utility functions
-├── assets/                   # Icons and images
 └── config.example.yaml      # Example configuration
 ```
 
