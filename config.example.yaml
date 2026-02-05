@@ -1,0 +1,81 @@
+# Conjure Blender Client Configuration
+# Copy this file to config.yaml and customize as needed
+
+# Server connection settings
+server:
+  # Local socket server settings
+  host: "127.0.0.1"
+  port: 9877
+
+  # Connection timeout in seconds
+  timeout: 30
+
+  # Auto-connect on Blender startup
+  auto_connect: true
+
+# Cloud settings (requires API key)
+cloud:
+  # Conjure cloud WebSocket URL
+  url: "wss://api.conjure.lautrek.com/ws"
+
+  # Your API key (get one at https://conjure.lautrek.com/dashboard)
+  # api_key: "your-api-key-here"
+
+  # Enable cloud features
+  enabled: false
+
+# Workflow settings
+workflow:
+  # Workflow mode affects available tools and defaults
+  # Options: design, engineering, animation
+  mode: "design"
+
+  # Show advanced options in UI
+  advanced_mode: false
+
+# Simulation settings
+simulation:
+  # Enable local physics simulation
+  physics_enabled: true
+
+  # GPU acceleration for simulations
+  gpu_acceleration: true
+
+  # Maximum simulation time (seconds)
+  max_simulation_time: 3600
+
+  # Fallback to server for unsupported simulations
+  server_fallback: true
+
+# Export settings
+export:
+  # Default export format
+  default_format: "glTF"
+
+  # Export path (relative to blend file or absolute)
+  # path: "./exports"
+
+  # Include materials in exports
+  include_materials: true
+
+  # Apply modifiers before export
+  apply_modifiers: true
+
+# UI settings
+ui:
+  # Show metrics panel
+  show_metrics: true
+
+  # Show connection status in header
+  header_status: true
+
+  # Notification level: none, errors, warnings, info, debug
+  notification_level: "info"
+
+# Logging settings
+logging:
+  # Log level: debug, info, warning, error
+  level: "info"
+
+  # Log to file
+  # file: "~/.config/blender/conjure.log"

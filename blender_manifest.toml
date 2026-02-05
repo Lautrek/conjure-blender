@@ -1,0 +1,39 @@
+# Blender 4.2+ Extensions Platform Manifest
+# https://docs.blender.org/manual/en/latest/extensions/index.html
+
+schema_version = "1.0.0"
+
+id = "conjure"
+version = "0.1.0"
+name = "Conjure - AI CAD Control"
+tagline = "AI-powered CAD control system for Blender"
+maintainer = "Lautrek <contact@lautrek.com>"
+type = "add-on"
+
+website = "https://conjure.lautrek.com"
+tags = ["3D View", "Modeling", "CAD", "AI", "Automation"]
+
+blender_version_min = "3.6.0"
+blender_version_max = "4.9.0"
+
+license = ["SPDX:MIT"]
+copyright = ["2024-2025 Lautrek"]
+
+[permissions]
+# Network access for cloud server connection
+network = "Required for Conjure cloud server connection and AI features"
+# File access for export operations
+files = "Required for importing/exporting CAD files"
+# Clipboard access for copy/paste operations
+clipboard = "Optional for copy/paste operations"
+
+[build]
+# Files/directories to exclude from the extension package
+paths_exclude_pattern = [
+    "__pycache__/",
+    "*.pyc",
+    ".git/",
+    ".gitignore",
+    "*.md",
+    "tests/",
+]

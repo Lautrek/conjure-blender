@@ -1,0 +1,129 @@
+# Conjure Blender Client CI
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Setup Python 3.11
+        run: uv python install 3.11
+
+      - name: Install ruff
+        run: |
+          uv venv
+          uv pip install ruff
+
+      - name: Run ruff check
+        run: uv run ruff check . --output-format=github
+
+      - name: Run ruff format check
+        run: uv run ruff format --check .
+
+  test-with-blender:
+    name: Test with Blender
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Setup Python 3.11
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: |
+          uv venv
+          uv pip install pytest
+
+      - name: Download Blender 4.2
+        run: |
+          BLENDER_VERSION=4.2.5
+          BLENDER_TAR=blender-${BLENDER_VERSION}-linux-x64.tar.xz
+          BLENDER_URL=https://download.blender.org/release/Blender4.2/${BLENDER_TAR}
+
+          echo "Downloading Blender ${BLENDER_VERSION}..."
+          wget -q "${BLENDER_URL}" -O /tmp/${BLENDER_TAR}
+          tar -xf /tmp/${BLENDER_TAR} -C /tmp/
+          echo "BLENDER_BIN=/tmp/blender-${BLENDER_VERSION}-linux-x64/blender" >> $GITHUB_ENV
+
+      - name: Install addon (symlink)
+        run: |
+          ADDON_DIR="${HOME}/.config/blender/4.2/scripts/addons/conjure"
+          mkdir -p "$(dirname "${ADDON_DIR}")"
+          ln -s "${GITHUB_WORKSPACE}" "${ADDON_DIR}"
+          echo "Addon symlinked to ${ADDON_DIR}"
+
+      - name: Verify addon loads in Blender
+        run: |
+          ${BLENDER_BIN} --background --python-expr "
+          import sys
+          sys.path.insert(0, '${GITHUB_WORKSPACE}')
+          import importlib
+          spec = importlib.util.spec_from_file_location('conjure', '${GITHUB_WORKSPACE}/__init__.py')
+          module = importlib.util.module_from_spec(spec)
+          print('Addon module loaded successfully')
+          "
+
+  build:
+    name: Build ZIP
+    runs-on: ubuntu-latest
+    needs: [lint, test-with-blender]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create addon ZIP
+        run: |
+          mkdir -p dist
+          zip -r dist/conjure-blender-${{ github.sha }}.zip . \
+            -x "*.git*" \
+            -x "*__pycache__*" \
+            -x "*.pyc" \
+            -x "dist/*" \
+            -x ".github/*"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: conjure-blender-addon
+          path: dist/*.zip
+
+  release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    permissions:
+      contents: write
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: ls -R artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            artifacts/conjure-blender-addon/*.zip
+          tag_name: "v${{ github.run_number }}"
+          body: "Release v${{ github.run_number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
