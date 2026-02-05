@@ -52,3 +52,4 @@ htmlcov/
 
 # Config files (user-specific)
 config.yaml
+uv.lock
