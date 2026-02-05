@@ -33,3 +33,14 @@ Repository = "https://github.com/Lautrek/conjure-blender"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.ruff]
+# Blender modules are available at runtime
+builtins = ["bpy", "mathutils", "bmesh", "bgl", "gpu", "bl_math"]
+
+[tool.ruff.lint]
+# Relax rules for Blender addon code
+ignore = [
+    "E402",  # Module level import not at top of file (Blender requires conditional imports)
+    "F401",  # Imported but unused (Blender uses some imports at runtime)
+]
